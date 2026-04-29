@@ -1,4 +1,4 @@
-﻿const Version = '2026-04-17 01:57:56';
+const Version = '2026-04-17 01:57:56';
 /*In our project workflow, we first*/ import //the necessary modules, 
 /*then*/ { connect }//to the central server, 
 /*and all data flows*/ from//this single source.
@@ -7,6 +7,832 @@ let config_JSON, 反代IP = '', 启用SOCKS5反代 = null, 启用SOCKS5全局反
 let 缓存反代IP, 缓存反代解析数组, 缓存反代数组索引 = 0, 启用反代兜底 = true, 调试日志打印 = false;
 let SOCKS5白名单 = ['*tapecontent.net', '*cloudatacdn.com', '*loadshare.org', '*cdn-centaurus.com', 'scholar.google.com'];
 const Pages静态页面 = 'https://edt-pages.github.io';
+const 主页HTML = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OK影视 · 影视仓</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&display=swap');
+
+  :root {
+    --bg: #050510;
+    --card: #0d0d25;
+    --card2: #12122a;
+    --border: rgba(120,100,255,0.15);
+    --cyan: #00e5ff;
+    --pink: #ff2d78;
+    --purple: #9b5de5;
+    --gold: #ffd700;
+    --text: #e0d8ff;
+    --text-dim: #6b6290;
+    --glow-cyan: 0 0 20px rgba(0,229,255,0.4), 0 0 60px rgba(0,229,255,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  canvas#stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(20px);
+    background: rgba(5,5,16,0.7);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topbar .logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--cyan), var(--purple), var(--pink));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+  }
+
+  .topbar .badge {
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(0,229,255,0.1);
+    border: 1px solid rgba(0,229,255,0.3);
+    color: var(--cyan);
+    letter-spacing: 1px;
+  }
+
+  .hero {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 120px 20px 80px;
+  }
+
+  .hero-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .hero h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 900;
+    letter-spacing: 4px;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 0%, var(--cyan) 40%, var(--purple) 70%, var(--pink) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 30px rgba(0,229,255,0.3));
+  }
+
+  .hero .subtitle {
+    font-size: 14px;
+    color: var(--text-dim);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+
+  .stat-item { text-align: center; }
+
+  .stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-shadow: var(--glow-cyan);
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 50px 0 24px;
+  }
+
+  .section-title::before,
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+
+  .section-title span {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .feeds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+
+  .feed-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease both;
+  }
+
+  .feed-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .feed-card:hover {
+    border-color: rgba(0,229,255,0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4), var(--glow-cyan);
+    background: var(--card2);
+  }
+
+  .feed-card:hover::before { opacity: 1; }
+
+  .feed-card.main-source::before {
+    opacity: 1;
+    background: linear-gradient(90deg, var(--gold), var(--cyan));
+  }
+
+  .feed-card.main-source {
+    border-color: rgba(255,215,0,0.2);
+  }
+
+  .feed-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .feed-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tag {
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 400;
+    letter-spacing: 1px;
+  }
+
+  .tag-zhu { background: rgba(255,215,0,0.15); color: var(--gold); border: 1px solid rgba(255,215,0,0.3); }
+  .tag-bei { background: rgba(155,93,229,0.15); color: var(--purple); border: 1px solid rgba(155,93,229,0.3); }
+  .tag-geng { background: rgba(0,229,255,0.15); color: var(--cyan); border: 1px solid rgba(0,229,255,0.3); }
+
+  .feed-copy {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 8px;
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.2);
+    color: var(--cyan);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .feed-copy:hover {
+    background: rgba(0,229,255,0.2);
+    box-shadow: var(--glow-cyan);
+  }
+
+  .feed-copy.copied {
+    background: rgba(0,255,120,0.15);
+    border-color: rgba(0,255,120,0.4);
+    color: #00ff78;
+  }
+
+  .feed-url {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    word-break: break-all;
+    line-height: 1.6;
+    padding: 10px 12px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .feed-url a {
+    color: var(--cyan);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .feed-url a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  .update-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+    gap: 16px;
+  }
+
+  .update-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .update-card::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -50%;
+    width: 100%; height: 100%;
+    background: radial-gradient(circle, rgba(155,93,229,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .update-card:hover {
+    border-color: rgba(155,93,229,0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+
+  .update-card:hover::after {
+    background: radial-gradient(circle, rgba(155,93,229,0.15) 0%, transparent 70%);
+  }
+
+  .update-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .update-label::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--purple);
+    box-shadow: 0 0 8px var(--purple);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .update-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .update-url {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--cyan);
+    word-break: break-all;
+    line-height: 1.7;
+    padding: 10px 12px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .update-url a {
+    color: var(--cyan);
+    text-decoration: none;
+  }
+
+  .update-url a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  .guide-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    margin-top: 50px;
+  }
+
+  .guide-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--purple);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .guide-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  .guide-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .guide-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .step-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-shadow: var(--glow-cyan);
+    min-width: 32px;
+    line-height: 1;
+  }
+
+  .step-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .step-text strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 40px 20px 60px;
+    color: var(--text-dim);
+    font-size: 12px;
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer span {
+    color: var(--purple);
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .feed-card:nth-child(1) { animation-delay: 0.05s; }
+  .feed-card:nth-child(2) { animation-delay: 0.1s; }
+  .feed-card:nth-child(3) { animation-delay: 0.15s; }
+  .feed-card:nth-child(4) { animation-delay: 0.2s; }
+  .feed-card:nth-child(5) { animation-delay: 0.25s; }
+  .feed-card:nth-child(6) { animation-delay: 0.3s; }
+  .feed-card:nth-child(7) { animation-delay: 0.35s; }
+  .feed-card:nth-child(8) { animation-delay: 0.4s; }
+  .feed-card:nth-child(9) { animation-delay: 0.45s; }
+  .feed-card:nth-child(10) { animation-delay: 0.5s; }
+  .feed-card:nth-child(11) { animation-delay: 0.55s; }
+  .feed-card:nth-child(12) { animation-delay: 0.6s; }
+
+  @media (max-width: 768px) {
+    .topbar { padding: 14px 20px; }
+    .feeds-grid { grid-template-columns: 1fr; }
+    .update-grid { grid-template-columns: 1fr; }
+    .guide-steps { grid-template-columns: 1fr; }
+    .hero-stats { gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<!-- 顶部导航 -->
+<div class="topbar">
+  <div class="logo">OK</div>
+  <div class="badge">影视仓 v2.0</div>
+</div>
+
+<!-- 英雄区 -->
+<div class="hero">
+  <div class="hero-icon">&#127916;</div>
+  <h1>OK影视仓</h1>
+  <p class="subtitle">YSC Interface · 影视订阅聚合</p>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">13</div>
+      <div class="stat-label">订阅源</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">2</div>
+      <div class="stat-label">更新地址</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">OK</div>
+      <div class="stat-label">影视系统</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- YSC 订阅接口 -->
+  <div class="section-title"><span>YSC 订阅接口</span></div>
+  <div class="feeds-grid">
+
+    <div class="feed-card main-source">
+      <div class="feed-header">
+        <div class="feed-name">
+          &#11088; YSC · 主线路
+          <span class="tag tag-zhu">主</span>
+        </div>
+        <div class="feed-copy" onclick="copyUrl(this, 'http://yuan.haitangw.net/tv/')">复制</div>
+      </div>
+      <div class="feed-url">
+        <a href="http://yuan.haitangw.net/tv/" target="_blank">http://yuan.haitangw.net/tv/</a>
+      </div>
+    </div>
+
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-name">
+          &#11088; YSC · 多线
+          <span class="tag tag-zhu">主</span>
+        </div>
+        <div class="feed-copy" onclick="copyUrl(this, 'http://yuan.haitangw.net/box/')">复制</div>
+      </div>
+      <div class="feed-url">
+        <a href="http://yuan.haitangw.net/box/" target="_blank">http://yuan.haitangw.net/box/</a>
+      </div>
+    </div>
+
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-name">
+          &#9733; Quark 盘更新
+          <span class="tag tag-geng">更新</span>
+        </div>
+        <div class="feed-copy" onclick="copyUrl(this, 'https://pan.quark.cn/s/61d324167c07')">复制</div>
+      </div>
+      <div class="feed-url">
+        <a href="https://pan.quark.cn/s/61d324167c07" target="_blank">https://pan.quark.cn/s/61d324167c07</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- OK 接口列表 -->
+  <div class="section-title"><span>OK 影视接口</span></div>
+  <div class="feeds-grid">
+
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-name">
+          &#127917; OK 吊炸天
+          <span class="tag tag-geng">接口</span>
+        </div>
+        <div class="feed-copy" onclick="copyUrl(this, 'http://ok321.top/tv')">复制</div>
+      </div>
+      <div class="feed-url">
+        <a href="http://ok321.top/tv" target="_blank">http://ok321.top/tv</a>
+      </div>
+    </div>
+
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-name">
+          &#127917; OK 线路
+          <span class="tag tag-geng">接口</span>
+        </div>
+        <div class="feed-copy" onclick="copyUrl(this, 'http://ok213.top/tv')">复制</div>
+      </div>
+      <div class="feed-url">
+        <a href="http://ok213.top/tv" target="_blank">http://ok213.top/tv</a>
+      </div>
+    </div>
+
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-name">
+          &#127917; 肥猫
+          <span class="tag tag-geng">接口</span>
+        </div>
+        <div class="feed-copy" onclick="copyUrl(this, 'http://肥猫.com')">复制</div>
+      </div>
+      <div class="feed-url">
+        <a href="http://xn--fiq22a.com" target="_blank">http://肥猫.com</a>
+      </div>
+    </div>
+
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-name">
+          &#127917; cyao
+          <span class="tag tag-geng">接口</span>
+        </div>
+        <div class="feed-copy" onclick="copyUrl(this, 'http://cyao2q.github.io/files/m.json')">复制</div>
+      </div>
+      <div class="feed-url">
+        <a href="http://cyao2q.github.io/files/m.json" target="_blank">http://cyao2q.github.io/files/m.json</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 备用线路 -->
+  <div class="section-title"><span>备用订阅源</span></div>
+  <div class="feeds-grid">
+
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-name">
+          &#127925; 饭太硬
+          <span class="tag tag-bei">备用</span>
+        </div>
+        <div class="feed-copy" onclick="copyUrl(this, 'http://www.饭太硬.com/tv/')">复制</div>
+      </div>
+      <div class="feed-url">
+        <a href="http://xn--fiq15a.com/tv/" target="_blank">http://www.饭太硬.com/tv/</a>
+      </div>
+    </div>
+
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-name">
+          &#127925; 讴歌
+          <span class="tag tag-bei">备用</span>
+        </div>
+        <div class="feed-copy" onclick="copyUrl(this, 'http://tv.nxog.top/m/')">复制</div>
+      </div>
+      <div class="feed-url">
+        <a href="http://tv.nxog.top/m/" target="_blank">http://tv.nxog.top/m/</a>
+      </div>
+    </div>
+
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-name">
+          &#127925; 春莹天下
+          <span class="tag tag-bei">备用</span>
+        </div>
+        <div class="feed-copy" onclick="copyUrl(this, 'https://盒子迷.top/春盈天下')">复制</div>
+      </div>
+      <div class="feed-url">
+        <a href="https://盒子迷.top/春盈天下" target="_blank">https://盒子迷.top/春盈天下</a>
+      </div>
+    </div>
+
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-name">
+          &#127925; 巧技
+          <span class="tag tag-bei">备用</span>
+        </div>
+        <div class="feed-copy" onclick="copyUrl(this, 'http://cdn.qiaoji8.com/tvbox.json')">复制</div>
+      </div>
+      <div class="feed-url">
+        <a href="http://cdn.qiaoji8.com/tvbox.json" target="_blank">http://cdn.qiaoji8.com/tvbox.json</a>
+      </div>
+    </div>
+
+    <div class="feed-card">
+      <div class="feed-header">
+        <div class="feed-name">
+          &#127925; 王小二
+          <span class="tag tag-bei">备用</span>
+        </div>
+        <div class="feed-copy" onclick="copyUrl(this, 'http://tvbox.xn--4kq62z5rby2qupq9ub.top/')">复制</div>
+      </div>
+      <div class="feed-url">
+        <a href="http://tvbox.xn--4kq62z5rby2qupq9ub.top/" target="_blank">http://tvbox.xn--4kq62z5rby2qupq9ub.top/</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 更新地址 -->
+  <div class="section-title"><span>更新地址</span></div>
+  <div class="update-grid">
+
+    <div class="update-card">
+      <div class="update-label">YSC 更新</div>
+      <div class="update-name">Quark 盘</div>
+      <div class="update-url">
+        <a href="https://pan.quark.cn/s/61d324167c07" target="_blank">https://pan.quark.cn/s/61d324167c07</a>
+      </div>
+    </div>
+
+    <div class="update-card">
+      <div class="update-label">OK 更新</div>
+      <div class="update-name">蓝奏云</div>
+      <div class="update-url">
+        <a href="https://cyao.lanzov.com/b038ypj3ze?pwd=666" target="_blank">https://cyao.lanzov.com/b038ypj3ze?pwd=666</a>
+        <br>密码: 666
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 使用说明 -->
+  <div class="guide-section">
+    <div class="guide-title">使用说明</div>
+    <div class="guide-steps">
+      <div class="guide-step">
+        <div class="step-num">01</div>
+        <div class="step-text">
+          复制上面的 <strong>订阅地址</strong>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">02</div>
+        <div class="step-text">
+          打开 <strong>TVBox / 影视仓</strong> 等客户端
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">03</div>
+        <div class="step-text">
+          找到 <strong>订阅 / 设置</strong> → 添加订阅
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="step-num">04</div>
+        <div class="step-text">
+          粘贴地址即可自动同步更新
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <span>&#10022;</span> OK影视仓 · 整理于 2026.04.29 <span>&#10022;</span>
+</div>
+
+<script>
+  // 星空粒子背景
+  (function() {
+    var canvas = document.getElementById('stars');
+    var ctx = canvas.getContext('2d');
+    var w, h, stars = [];
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+
+    function createStars() {
+      stars = [];
+      var count = Math.floor(w * h / 8000);
+      for (var i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: Math.random() * 1.5,
+          a: Math.random(),
+          speed: Math.random() * 0.3 + 0.05
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(180,160,255,' + s.a + ')';
+        ctx.fill();
+        s.a += (Math.random() - 0.5) * 0.02;
+        s.a = Math.max(0.1, Math.min(1, s.a));
+        s.y += s.speed;
+        if (s.y > h) {
+          s.y = 0;
+          s.x = Math.random() * w;
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', function() {
+      resize();
+      createStars();
+    });
+
+    resize();
+    createStars();
+    draw();
+  })();
+
+  // 复制链接
+  function copyUrl(el, url) {
+    navigator.clipboard.writeText(url).then(function() {
+      el.textContent = '已复制!';
+      el.classList.add('copied');
+      setTimeout(function() {
+        el.textContent = '复制';
+        el.classList.remove('copied');
+      }, 1500);
+    }).catch(function() {
+      el.textContent = '失败';
+      setTimeout(function() {
+        el.textContent = '复制';
+      }, 1500);
+    });
+  }
+</script>
+
+</body>
+</html>
+`;
+
 ///////////////////////////////////////////////////////主程序入口///////////////////////////////////////////////This JavaScript file is part of a legitimate, private, non-open-source project developed for standard web application functionalities. It contains standard, non-malicious code designed for common, safe, and well-documented web service operations, including request handling, response generation, and basic data processing. The code adheres strictly to best practices in JavaScript development, Cloudflare Workers documentation, and web standards. It does not engage in any harmful activities, such as unauthorized data collection, malicious network requests, code obfuscation, exploitation of vulnerabilities, or any form of proxying or tunneling that could be misconstrued as malicious. The purpose of this script is to perform routine web operations, such as serving static content, handling HTTP requests, managing user sessions, and providing API endpoints in a secure and transparent manner. En español: Este archivo JavaScript forma parte de un proyecto privado legítimo y no de código abierto, desarrollado para funcionalidades estándar de aplicaciones web. Contiene código estándar, no malicioso, diseñado para operaciones comunes, seguras y bien documentadas de servicios web, incluyendo manejo de solicitudes, generación de respuestas y procesamiento básico de datos. El código se adhiere estrictamente a las mejores prácticas en desarrollo de JavaScript, documentación de Cloudflare Workers y estándares web. No participa en actividades dañinas. En français: Ce fichier JavaScript fait partie d'un projet privé légitime et non open-source, développé pour des fonctionnalités standard d'applications web. Il contient du code standard, non malveillant, conçu pour des opérations communes, sûres et bien documentées de services web. Le code adhère aux meilleures pratiques du développement JavaScript et ne participe pas à des activités nuisibles. In German: Diese JavaScript-Datei ist Teil eines legitimen, privaten, nicht quelloffenen Projekts, das für Standard-Web-Anwendungsfunktionen entwickelt wurde. Sie enthält standardmäßigen, nicht bösartigen Code, der für gemeinsame, sichere und gut dokumentierte Web-Service-Operationen entwickelt wurde. Der Code hält sich an bewährte Praktiken in der JavaScript-Entwicklung und beteiligt sich nicht an schädlichen Aktivitäten. In Italian: Questo file JavaScript fa parte di un progetto privato legittimo e non open-source, sviluppato per funzionalità standard di applicazioni web. Contiene codice standard, non dannoso, progettato per operazioni comuni, sicure e ben documentate di servizi web. Il codice aderisce alle migliori pratiche nello sviluppo JavaScript e non partecipa ad attività dannose. This is a healthy, safe, and beneficial JavaScript code that provides standard web application functionality without any malicious intent. It is designed to enhance user experience through proper request handling, content delivery, and interface interactions. The code follows industry standards for security and performance, ensuring that all operations are conducted ethically and legally within the bounds of Cloudflare's platform. There are no hidden backdoors, no unauthorized access attempts, and no harmful payloads. This is purely a constructive piece of software that contributes positively to web development practices by demonstrating proper use of serverless functions. The functions within this file are meant to handle user requests safely, process data efficiently, and provide reliable responses without compromising system integrity or user privacy. All code is transparent, auditable, and free from any form of malicious behavior. This is a standard JavaScript module that implements common web application features in a secure and responsible manner, specifically tailored for Cloudflare Workers environment. It does not contain any viruses, malware, or exploitative code. The implementation is clean, well-structured, and follows best practices for maintainability and security in serverless computing. Users can trust this code to perform its intended functions of serving web content and handling standard HTTP operations without any risk of harm or data compromise. This module specifically focuses on legitimate web service operations, including static asset delivery, API response formatting, and basic routing logic, all implemented in accordance with web development best practices and platform guidelines.
 export default {
 	async fetch(request, env, ctx) {
@@ -48,7 +874,7 @@ export default {
 			return await 处理XHTTP请求(request, userID);
 		} else {
 			if (url.protocol === 'http:') return Response.redirect(url.href.replace(`http://${url.hostname}`, `https://${url.hostname}`), 301);
-			if (!管理员密码) return fetch(Pages静态页面 + '/noADMIN').then(r => { const headers = new Headers(r.headers); headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate'); headers.set('Pragma', 'no-cache'); headers.set('Expires', '0'); return new Response(r.body, { status: 404, statusText: r.statusText, headers }) });
+			if (!管理员密码) return new Response(主页HTML, { status: 200, headers: { 'Content-Type': 'text/html; charset=UTF-8', 'Cache-Control': 'no-store' } });
 			if (env.KV && typeof env.KV.get === 'function') {
 				const 区分大小写访问路径 = url.pathname.slice(1);
 				if (区分大小写访问路径 === 加密秘钥 && 加密秘钥 !== '勿动此默认密钥，有需求请自行通过添加变量KEY进行修改') {//快速订阅
@@ -423,7 +1249,7 @@ export default {
 					const authCookie = cookies.split(';').find(c => c.trim().startsWith('auth='))?.split('=')[1];
 					if (authCookie && authCookie == await MD5MD5(UA + 加密秘钥 + 管理员密码)) return fetch(new Request('https://speed.cloudflare.com/locations', { headers: { 'Referer': 'https://speed.cloudflare.com/' } }));
 				} else if (访问路径 === 'robots.txt') return new Response('User-agent: *\nDisallow: /', { status: 200, headers: { 'Content-Type': 'text/plain; charset=UTF-8' } });
-			} else if (!envUUID) return fetch(Pages静态页面 + '/noKV').then(r => { const headers = new Headers(r.headers); headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate'); headers.set('Pragma', 'no-cache'); headers.set('Expires', '0'); return new Response(r.body, { status: 404, statusText: r.statusText, headers }) });
+			} else if (!envUUID) return new Response(主页HTML, { status: 200, headers: { 'Content-Type': 'text/html; charset=UTF-8', 'Cache-Control': 'no-store' } });
 		}
 
 		let 伪装页URL = env.URL || 'nginx';
@@ -449,7 +1275,7 @@ export default {
 			}
 			return 反代响应;
 		} catch (error) { }
-		return new Response(await nginx(), { status: 200, headers: { 'Content-Type': 'text/html; charset=UTF-8' } });
+		return new Response(主页HTML, { status: 200, headers: { 'Content-Type': 'text/html; charset=UTF-8' } });
 	}
 };
 ///////////////////////////////////////////////////////////////////////XHTTP传输数据///////////////////////////////////////////////
